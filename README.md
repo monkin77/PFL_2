@@ -9,11 +9,12 @@ This project consists of implementing a board game for 2 players named *Shi* in 
 | Rui Filipe Teixeira Alves | up2019...   | 50%          |
 
 ---
-
 ## Setup and Execution
 
+---
 ## Game Description
 
+---
 ## Game Logic
 ### Internal Representation of the Game State
 
@@ -29,6 +30,8 @@ This project consists of implementing a board game for 2 players named *Shi* in 
 
 ### Computers's plays
 
+---
 ## Conclusion
 
+---
 ## Bibliography
