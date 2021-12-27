@@ -50,7 +50,8 @@ moveXAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     NewX is X + Steps,
     NewX >= 0,
     NewX =< 7,
-    moveXAxis(X, Y, Steps, Board, ResultingBoard, [], Symbol).
+    moveXAxis(X, Y, Steps, Board, AuxBoard, [], Symbol),
+    moveXAxis(X, Y, 0, AuxBoard, ResultingBoard, [], empty).
 
 moveXAxis(_, _, _, [], Acc, Acc, _).
 moveXAxis(X, 0, Steps, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :-
@@ -65,6 +66,8 @@ moveXAxis(X, Y, Steps, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :-
     append(Acc, [Row], NewAcc),
     moveXAxis(X, NewY, Steps, RemainingBoard, ResultingBoard, NewAcc, Symbol).
 /* --------------------------------------------------------------- */
+
+/* moveXAxis & moveYAxis repeat code */
 
 /* --------------------------------------------------------------- */
 moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
@@ -90,3 +93,25 @@ placeInColumn(X, Y, [Row | RemainingBoard], ResultingBoard, Acc, Symbol):-
     append(Acc, [Row], NewAcc),
     placeInColumn(X, NewY, RemainingBoard, ResultingBoard, NewAcc, Symbol).
 /* --------------------------------------------------------------- */
+
+/* --------------------------------------------------------------- */
+moveXYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
+    NewX is X+Steps,
+    NewY is Y+Steps,
+    NewX >= 0, NewX =< 7, 
+    NewY >= 0, NewY =< 7,
+    placeSymbol(NewX, NewY, Board, AuxBoard, [], Symbol),
+    placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
+
+placeSymbol(_, _, [], Acc, Acc, _).
+
+placeSymbol(X, 0, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :-
+    placeInRow(X, Row, NewRow, Symbol),
+    append(Acc, [NewRow], NewAcc),
+    append(NewAcc, RemainingBoard, FinalAcc),
+    placeInColumn(X, 0, [], ResultingBoard, FinalAcc, Symbol).
+
+placeSymbol(X, Y, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :-
+    NewY is Y - 1,
+    append(Acc, [Row], NewAcc),
+    placeSymbol(X, NewY, RemainingBoard, ResultingBoard, NewAcc, Symbol).
