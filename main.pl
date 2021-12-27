@@ -28,63 +28,64 @@ placeEmpty(X, Y, currX, currY, [H|T]).
 
 
 /* --------------------------------------------------------------- */
-placeInRow(Idx, Row, ResultRow):- placeInRow(Idx, Row, ResultRow, []).
+placeInRow(Idx, Row, ResultRow, Symbol):- placeInRow(Idx, Row, ResultRow, [], Symbol).
 
-placeInRow(_, [], Acc, Acc).
-placeInRow(0, [_|T], Row, Acc):-
-    append(Acc, [samurai], NewAcc),
+placeInRow(_, [], Acc, Acc, _).
+placeInRow(0, [_|T], Row, Acc, Symbol):-
+    append(Acc, [Symbol], NewAcc),
     append(NewAcc, T, FinalAcc),
-    placeInRow(0, [], Row, FinalAcc).
+    placeInRow(0, [], Row, FinalAcc, Symbol).
 
-placeInRow(Idx, [H|T], Row, Acc):- 
+placeInRow(Idx, [H|T], Row, Acc, Symbol):- 
     NewIdx is Idx-1,
     append(Acc, [H], NewAcc),
-    placeInRow(NewIdx, T, Row, NewAcc).
+    placeInRow(NewIdx, T, Row, NewAcc, Symbol).
 /* --------------------------------------------------------------- */
 
 
 /* --------------------------------------------------------------- */
-moveXAxis(X, Y, Steps, Board, ResultingBoard) :-
+moveXAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     /* Verificar se X e Y estão entre 0 e 7, se a posição aonde colocar está empty
     e retirar o elemento(para ja e um samurai) da sua posição inicial*/
     NewX is X + Steps,
     NewX >= 0,
     NewX =< 7,
-    moveXAxis(X, Y, Steps, Board, ResultingBoard, []).
+    moveXAxis(X, Y, Steps, Board, ResultingBoard, [], Symbol).
 
-moveXAxis(_, _, _, [], Acc, Acc).
-moveXAxis(X, 0, Steps, [Row | RemainingBoard], ResultingBoard, Acc) :-
+moveXAxis(_, _, _, [], Acc, Acc, _).
+moveXAxis(X, 0, Steps, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :-
     PositionInRow is X + Steps,
-    placeInRow(PositionInRow, Row, NewRow),
+    placeInRow(PositionInRow, Row, NewRow, Symbol),
     append(Acc, [NewRow], NewAcc),
     append(NewAcc, RemainingBoard, FinalAcc),
-    moveXAxis(X, 0, Steps, [], ResultingBoard, FinalAcc).
+    moveXAxis(X, 0, Steps, [], ResultingBoard, FinalAcc, Symbol).
 
-moveXAxis(X, Y, Steps, [Row | RemainingBoard], ResultingBoard, Acc) :- 
+moveXAxis(X, Y, Steps, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :- 
     NewY is Y-1,
     append(Acc, [Row], NewAcc),
-    moveXAxis(X, NewY, Steps, RemainingBoard, ResultingBoard, NewAcc).
+    moveXAxis(X, NewY, Steps, RemainingBoard, ResultingBoard, NewAcc, Symbol).
 /* --------------------------------------------------------------- */
 
 /* --------------------------------------------------------------- */
-moveYAxis(X, Y, Steps, Board, ResultingBoard) :- 
+moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
     NewY is Y + Steps,
     NewY >= 0,
     NewY =< 7,
+    Symbol =:= Symbol,
     /* Verificar se X e Y estão entre 0 e 7, se a posição aonde colocar está empty
     e retirar o elemento(para ja e um samurai) da sua posição inicial*/
-    placeInColumn(X, NewY, Board, ResultingBoard, []).
+    placeInColumn(X, NewY, Board, AuxBoard, [], Symbol),
+    placeInColumn(X, Y, AuxBoard, ResultingBoard, [], empty).
 
-
-placeInColumn(_, _, [], Acc, Acc).
-placeInColumn(X, 0, [Row |RemainingBoard], ResultingBoard, Acc):-
-    placeInRow(X, Row, NewRow),
+placeInColumn(_, _, [], Acc, Acc, _).
+placeInColumn(X, 0, [Row |RemainingBoard], ResultingBoard, Acc, Symbol):-
+    placeInRow(X, Row, NewRow, Symbol),
     append(Acc, [NewRow], NewAcc),
     append(NewAcc, RemainingBoard, FinalAcc),
-    placeInColumn(X, 0, [], ResultingBoard, FinalAcc).
+    placeInColumn(X, 0, [], ResultingBoard, FinalAcc, Symbol).
 
-placeInColumn(X, Y, [Row | RemainingBoard], ResultingBoard, Acc):-
+placeInColumn(X, Y, [Row | RemainingBoard], ResultingBoard, Acc, Symbol):-
     NewY is Y - 1,
     append(Acc, [Row], NewAcc),
-    placeInColumn(X, NewY, RemainingBoard, ResultingBoard, NewAcc).
+    placeInColumn(X, NewY, RemainingBoard, ResultingBoard, NewAcc, Symbol).
 /* --------------------------------------------------------------- */
