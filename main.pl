@@ -71,9 +71,10 @@ moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     NewY is Y + Steps,
     NewY >= 0,
     NewY =< 7,
-    Symbol =:= Symbol,
-    /* Verificar se X e Y estão entre 0 e 7, se a posição aonde colocar está empty
-    e retirar o elemento(para ja e um samurai) da sua posição inicial*/
+    /* TO DO
+    verificar se a posição aonde colocar está empty
+    verificar se o elemento na posicao inicial é igual ao symbol
+    */
     placeInColumn(X, NewY, Board, AuxBoard, [], Symbol),
     placeInColumn(X, Y, AuxBoard, ResultingBoard, [], empty).
 
