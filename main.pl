@@ -1,26 +1,36 @@
 initialBoard([
-[ninja,ninja,ninja,ninja,ninja,ninja,ninja,ninja],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[samurai,samurai,samurai,samurai,samurai,samurai,samurai, samurai]
+[n,n,n,n,n,n,n,n],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[e,e,e,e,e,e,e,e],
+[s,s,s,s,s,s,s,s]
 ]).
 
 /* --------------------------------------------------------------- */
+
+/* Function that checks if the row has the element Symbol in position X*/
+isInRowIndex(0, [Elem | _], Symbol):- !, fail.
+isInRowIndex(0, [Symbol | _], Symbol). 
+isInRowIndex(_, [], _):- fail.
+
+isInRowIndex(X, [_ | T], Symbol):-
+    NewX is X-1,
+    isInRowIndex(NewX, T, Symbol).
+
+/* --------------------------------------------------------------- */
+
 moveXAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
-    /* Verificar se X e Y estão entre 0 e 7, se a posição aonde colocar está empty
-    e retirar o elemento(para ja e um samurai) da sua posição inicial*/
     NewX is X + Steps,
     NewX >= 0,
     NewX =< 7,
     placeSymbol(NewX, Y, Board, AuxBoard, [], Symbol),
-    placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
+    placeSymbol(X, Y, AuxBoard, ResultingBoard, [], e). /* place empty symbol in the position the element was */
 
 moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
     NewY is Y + Steps,
@@ -48,7 +58,7 @@ moveXYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
 placeSymbol(_, _, [], Acc, Acc, _).
 
 placeSymbol(X, 0, [Row | RemainingBoard], ResultingBoard, Acc, Symbol) :-
-    placeInRow(X, Row, NewRow, Symbol),
+    placeInRow(X, Row, NewRow, Symbol), !,
     append(Acc, [NewRow], NewAcc),
     append(NewAcc, RemainingBoard, FinalAcc),
     placeSymbol(X, 0, [], ResultingBoard, FinalAcc, Symbol).
@@ -68,7 +78,7 @@ placeInRow(_, [], Acc, Acc, _).
 placeInRow(0, [_|T], Row, Acc, Symbol):-
     append(Acc, [Symbol], NewAcc),
     append(NewAcc, T, FinalAcc),
-    placeInRow(0, [], Row, FinalAcc, Symbol).
+    placeInRow(0, [], Row, FinalAcc, Symbol), !.
 
 placeInRow(Idx, [H|T], Row, Acc, Symbol):- 
     NewIdx is Idx-1,
