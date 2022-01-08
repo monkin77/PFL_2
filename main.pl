@@ -2,7 +2,7 @@
 
 initialBoard([
 [empty,ninja,ninja,ninja,ninja,empty,empty,ninja],
-[empty,ninja,empty,ninja,empty,ninja,samurai,empty],
+[empty,samurai,empty,ninja,empty,empty,ninja,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
@@ -48,13 +48,14 @@ clearPrefix(X, Steps, hor, [_ | T], Symbol) :-
     clearPrefix(NewX, Steps, hor, T, Symbol).
 
 isValidMove(X, 0, Steps, hor, [Row | _], Symbol) :-
-    !, Steps >= 0,
+    Steps >= 0,
     clearPrefix(X, Steps, hor, Row, Symbol).
 
 isValidMove(X, 0, Steps, hor, [Row | _], Symbol) :-
     NewSteps is abs(Steps),
     reverse(Row, RevRow),
-    clearPrefix(X, NewSteps, hor, RevRow, Symbol).
+    NewX is 7-X,
+    clearPrefix(NewX, NewSteps, hor, RevRow, Symbol).
 
 isValidMove(X, Y, Steps, hor, [_ | RemainingBoard], Symbol) :-
     NewY is Y-1,
@@ -77,7 +78,7 @@ isValidMove(Steps, hor, [Symbol | RemainingRow], Symbol, AllyCount) :-
     NewSteps is Steps - 1,
     !, isValidMove(NewSteps, hor, RemainingRow, Symbol, NewAllyCount).
 isValidMove(Steps, hor, [empty | RemainingRow], Symbol, AllyCount) :-
-    AllyCount < 2,
+    AllyCount =< 2,
     NewSteps is Steps - 1,
     !, isValidMove(NewSteps, hor, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
 isValidMove(_, _, _, _, _) :-     /* enemy symbol*/
