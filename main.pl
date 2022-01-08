@@ -14,14 +14,27 @@ initialBoard([
 
 /* --------------------------------------------------------------- */
 
+isInCell(X, 0, [Row | _], Symbol):-
+    !, isInRowIndex(X, Row, Symbol).
+
+isInCell(X, Y, [_ | RemainingBoard], Symbol):-
+    X >= 0,
+    Y >= 0,
+    NewY is Y-1,
+    isInCell(X, NewY, RemainingBoard, Symbol).
+
+
+/* --------------------------------------------------------------- */
+
 /* Function that checks if the row has the element Symbol in position X*/
-isInRowIndex(0, [Elem | _], Symbol):- !, fail.
 isInRowIndex(0, [Symbol | _], Symbol). 
+isInRowIndex(0, [_ | _], _):- !, fail.
 isInRowIndex(_, [], _):- fail.
 
 isInRowIndex(X, [_ | T], Symbol):-
     NewX is X-1,
     isInRowIndex(NewX, T, Symbol).
+
 
 /* --------------------------------------------------------------- */
 
@@ -84,3 +97,5 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
     NewIdx is Idx-1,
     append(Acc, [H], NewAcc),
     placeInRow(NewIdx, T, Row, NewAcc, Symbol).
+
+/* --------------------------------------------------------------- */
