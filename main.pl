@@ -14,6 +14,9 @@ initialBoard([
 
 /* --------------------------------------------------------------- */
 
+/* --------------------------------------------------------------- */
+
+/* Function to check if a Symbol is in position X Y of the Board */
 isInCell(X, 0, [Row | _], Symbol):-
     !, isInRowIndex(X, Row, Symbol).
 
@@ -23,6 +26,7 @@ isInCell(X, Y, [_ | RemainingBoard], Symbol):-
     NewY is Y-1,
     isInCell(X, NewY, RemainingBoard, Symbol).
 
+/* --------------------------------------------------------------- */
 
 /* --------------------------------------------------------------- */
 
@@ -38,6 +42,9 @@ isInRowIndex(X, [_ | T], Symbol):-
 
 /* --------------------------------------------------------------- */
 
+/* --------------------------------------------------------------- */
+
+/* Function to move a Symbol Steps positions horizontally */
 moveXAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     NewX is X + Steps,
     NewX >= 0,
@@ -45,6 +52,7 @@ moveXAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     placeSymbol(NewX, Y, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], e). /* place empty symbol in the position the element was */
 
+/* Function to move a Symbol Steps positions vertically */
 moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
     NewY is Y + Steps,
     NewY >= 0,
@@ -56,6 +64,8 @@ moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     placeSymbol(X, NewY, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
 
+
+/* Function to move a Symbol Steps positions in diagonal */
 moveXYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
     NewX is X+Steps,
     NewY is Y+Steps,
