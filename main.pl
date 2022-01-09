@@ -1,14 +1,14 @@
 :-use_module(library(lists)).
 
 initialBoard([
-[ninja,ninja,ninja,ninja,ninja,empty,empty,ninja],
-[empty,ninja,empty,ninja,empty,empty,ninja,empty],
-[empty,ninja,ninja,ninja,ninja,samurai,empty,empty],
-[samurai,empty,empty,samurai,empty,empty,empty,empty],
-[empty,empty,empty,empty,ninja,empty,empty,empty],
-[empty,ninja,empty,empty,empty,ninja,empty,empty],
-[empty,empty,empty,empty,ninja,empty,empty,empty],
-[samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
+[ninja,ninja,ninja,ninja,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,ninja,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,samurai,samurai,empty,samurai,samurai]
 ]).
 
 /* --------------------------------------------------------------- */
@@ -196,4 +196,24 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
     placeInRow(NewIdx, T, Row, NewAcc, Symbol).
 
 /* --------------------------------------------------------------- */
+countPiecesInRow(Row, NinjaCount, SamuraiCount) :- countPiecesInRow(Row, NinjaCount, SamuraiCount, 0, 0), !.
 
+countPiecesInRow([], NinjaCount, SamuraiCount, NinjaCount, SamuraiCount) :- !.
+countPiecesInRow([ninja | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
+    NewAcc1 is Acc1+1,
+    countPiecesInRow(T, NinjaCount, SamuraiCount, NewAcc1, Acc2).
+countPiecesInRow([samurai | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
+    NewAcc2 is Acc2+1,
+    countPiecesInRow(T, NinjaCount, SamuraiCount, Acc1, NewAcc2).
+countPiecesInRow([_ | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
+    countPiecesInRow(T, NinjaCount, SamuraiCount, Acc1, Acc2).
+
+isEndGame(Board) :- isEndGame(Board, 0, 0).
+
+isEndGame([], NinjaCount, SamuraiCount) :-
+    !, (NinjaCount =< 4; SamuraiCount =< 4).
+isEndGame([Row | RemainingBoard], NinjaCount, SamuraiCount) :-
+    countPiecesInRow(Row, RowNinjaCount, RowSamuraiCount),
+    NewNinjaCount is NinjaCount + RowNinjaCount,
+    NewSamuraiCount is SamuraiCount + RowSamuraiCount,
+    isEndGame(RemainingBoard, NewNinjaCount, NewSamuraiCount).
