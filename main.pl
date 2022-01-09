@@ -2,14 +2,11 @@
 
 initialBoard([
 [empty,ninja,ninja,ninja,ninja,empty,empty,ninja],
-[empty,samurai,empty,ninja,empty,empty,ninja,empty],
+[empty,empty,empty,ninja,empty,empty,ninja,empty],
+[empty,ninja,empty,empty,empty,empty,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,ninja,empty,empty,empty,empty,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
 [samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
 ]).
@@ -52,7 +49,7 @@ clearPrefix(X, Steps, hor, [_ | T], Symbol) :-
     clearPrefix(NewX, Steps, hor, T, Symbol).
 
 isValidMove(X, 0, Steps, hor, [Row | _], Symbol) :-
-    Steps >= 0,
+    Steps >= 0, !,
     clearPrefix(X, Steps, hor, Row, Symbol).
 
 isValidMove(X, 0, Steps, hor, [Row | _], Symbol) :-
@@ -65,10 +62,13 @@ isValidMove(X, Y, Steps, hor, [_ | RemainingBoard], Symbol) :-
     NewY is Y-1,
     !, isValidMove(X, NewY, Steps, hor, RemainingBoard, Symbol).
 
-/* isValidMove(X, 0, ) */
-isValidMove(_, hor, [], _, _) :- !, fail.
+/* Vertical */
+isValidMove(X, Y, Steps, vert, Board, Symbol) :-
+    !, transpose(Board, NewBoard),
+    isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
 
 /* Acceptance states */
+isValidMove(_, hor, [], _, _) :- !, fail.
 isValidMove(_,_,_,_,3) :- !, fail.  /* if it finds 2 allies */
 isValidMove(0, hor, [empty | _], _, AllyCount) :-
     !, AllyCount < 2.
@@ -87,10 +87,6 @@ isValidMove(Steps, hor, [empty | RemainingRow], Symbol, AllyCount) :-
     !, isValidMove(NewSteps, hor, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
 isValidMove(_, _, _, _, _) :-     /* enemy symbol*/
     !, fail.
-
-/* isValidMove(X, Steps, hor, [Symbol | RemainingRow], Symbol, notFoundAlly) :- */
-
-/* Vertical */ 
 
 /* isValidMove(X, Y, Steps, vert, [Row | RemainingBoard]) :-
 isValidMove(X, Y, Steps, diag, [Row | RemainingBoard]) :- */
