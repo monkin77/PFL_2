@@ -67,7 +67,7 @@ isValidMove(X, Y, Steps, vert, Board, Symbol) :-
     !, transpose(Board, NewBoard),
     isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
 
-/* Acceptance states */
+/* Acceptance states (After flattening trajectory into a row) */
 isValidMove(_, [], _, _) :- !, fail.
 isValidMove(_,_,_,3) :- !, fail.  /* if it finds 2 allies */
 isValidMove(0, [empty | _], _, AllyCount) :-
