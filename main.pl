@@ -3,7 +3,7 @@
 initialBoard([
 [empty,ninja,ninja,ninja,ninja,empty,empty,ninja],
 [empty,empty,empty,ninja,empty,empty,ninja,empty],
-[empty,ninja,empty,empty,empty,empty,empty,empty],
+[empty,ninja,empty,ninja,ninja,samurai,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
 [empty,empty,empty,empty,empty,empty,empty,empty],
 [empty,ninja,empty,empty,empty,empty,empty,empty],
@@ -42,7 +42,7 @@ isInRowIndex(X, [_ | T], Symbol):-
 /*  Last Argument: 0 -> NotFoundAlly   1 -> FoundMovingPiece    2 -> Found Ally  */ 
 
 /* Horizontal  */
-clearPrefix(0, Steps, hor, Row, Symbol) :- !, isValidMove(Steps, hor, Row, Symbol, 0).
+clearPrefix(0, Steps, hor, Row, Symbol) :- !, isValidMove(Steps, Row, Symbol, 0).
 clearPrefix(_, _, hor, [], _) :- !, fail.
 clearPrefix(X, Steps, hor, [_ | T], Symbol) :-
     NewX is X-1,
@@ -68,24 +68,24 @@ isValidMove(X, Y, Steps, vert, Board, Symbol) :-
     isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
 
 /* Acceptance states */
-isValidMove(_, hor, [], _, _) :- !, fail.
-isValidMove(_,_,_,_,3) :- !, fail.  /* if it finds 2 allies */
-isValidMove(0, hor, [empty | _], _, AllyCount) :-
+isValidMove(_, [], _, _) :- !, fail.
+isValidMove(_,_,_,3) :- !, fail.  /* if it finds 2 allies */
+isValidMove(0, [empty | _], _, AllyCount) :-
     !, AllyCount < 2.
-isValidMove(0, hor, [Symbol | _], Symbol, _) :-
+isValidMove(0, [Symbol | _], Symbol, _) :-
     !, fail.
-isValidMove(0, hor, [_ | _], _, AllyCount) :-
+isValidMove(0, [_ | _], _, AllyCount) :-
     !, AllyCount =:= 2.
 
-isValidMove(Steps, hor, [Symbol | RemainingRow], Symbol, AllyCount) :-
+isValidMove(Steps, [Symbol | RemainingRow], Symbol, AllyCount) :-
     AllyCount < 2, NewAllyCount is AllyCount+1,
     NewSteps is Steps - 1,
-    !, isValidMove(NewSteps, hor, RemainingRow, Symbol, NewAllyCount).
-isValidMove(Steps, hor, [empty | RemainingRow], Symbol, AllyCount) :-
+    !, isValidMove(NewSteps, RemainingRow, Symbol, NewAllyCount).
+isValidMove(Steps, [empty | RemainingRow], Symbol, AllyCount) :-
     AllyCount =< 2,
     NewSteps is Steps - 1,
-    !, isValidMove(NewSteps, hor, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
-isValidMove(_, _, _, _, _) :-     /* enemy symbol*/
+    !, isValidMove(NewSteps, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
+isValidMove(_, _, _, _) :-     /* enemy symbol*/
     !, fail.
 
 /* isValidMove(X, Y, Steps, vert, [Row | RemainingBoard]) :-
