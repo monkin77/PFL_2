@@ -1,13 +1,13 @@
 :-use_module(library(lists)).
 
 initialBoard([
-[empty,ninja,ninja,ninja,ninja,empty,empty,ninja],
-[empty,empty,empty,ninja,empty,empty,ninja,empty],
-[empty,ninja,empty,ninja,ninja,samurai,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,ninja,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
+[ninja,ninja,ninja,ninja,ninja,empty,empty,ninja],
+[empty,ninja,empty,ninja,empty,empty,ninja,empty],
+[empty,ninja,ninja,ninja,ninja,samurai,empty,empty],
+[samurai,empty,empty,samurai,empty,empty,empty,empty],
+[empty,empty,empty,empty,ninja,empty,empty,empty],
+[empty,ninja,empty,empty,empty,ninja,empty,empty],
+[empty,empty,empty,empty,ninja,empty,empty,empty],
 [samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
 ]).
 
@@ -30,13 +30,13 @@ isInCell(X, Y, [_ | RemainingBoard], Symbol):-
 /* --------------------------------------------------------------- */
 
 /* Function that checks if the row has the element Symbol in position X*/
-isInRowIndex(0, [Symbol | _], Symbol). 
+isInRowIndex(0, [Symbol | _], Symbol) :- !. 
 isInRowIndex(0, [_ | _], _):- !, fail.
 isInRowIndex(_, [], _):- fail.
 
 isInRowIndex(X, [_ | T], Symbol):-
-    NewX is X-1,
-    isInRowIndex(NewX, T, Symbol).
+    X > 0, NewX is X-1,
+    !, isInRowIndex(NewX, T, Symbol).
 
 /* ------------------------Validation----------------------------- */
 /*  Last Argument: 0 -> NotFoundAlly   1 -> FoundMovingPiece    2 -> Found Ally  */ 
@@ -68,13 +68,40 @@ isValidMove(X, Y, Steps, vert, Board, Symbol) :-
     isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
 
 /* Diagonal */
-isValidMove(X, Y, Steps, diag, Board, Symbol) :-
-    !, transpose(Board, NewBoard),
-    isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
+/* StepsY < 0 -> Yi is Y+StepsY, Xi is X+StepsX, StepsY is abs(StepsY), StepsX is -StepsX */
+isValidMove(X, Y, StepsX, StepsY, diag, Board, Symbol) :-   /* This might return reversed? */
+    StepsY < 0, !, NewStepsY is abs(StepsY), NewY is Y-NewStepsY, NewStepsX is -StepsX, NewX is X+StepsX,
+    getDiagonal(NewX, NewY, NewStepsX, NewStepsY, diag, Board, [], Trajectory),
+    reverse(Trajectory, NewTrajectory),
+    AbsX is abs(StepsX),
+    isValidMove(AbsX, NewTrajectory, Symbol, 0).
+isValidMove(X, Y, StepsX, StepsY, diag, Board, Symbol) :-
+    !, StepsY >= 0,
+    getDiagonal(X, Y, StepsX, StepsY, diag, Board, [], Trajectory),
+    AbsX is abs(StepsX),
+    isValidMove(AbsX, Trajectory, Symbol, 0).
 
-isValidMove(X, Y, Steps, diag, Board, Symbol, Acc) :-
-    !, transpose(Board, NewBoard),
-    isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
+/* Iterate Matrix to find diagonal */
+getDiagonal(X, 0, _, 0, diag, [Row | _], Acc, Trajectory) :- /* Base case */
+    !, isInRowIndex(X, Row, CurrSymbol),    /* Get Symbol from this Row */
+    append(Acc, [CurrSymbol], NewAcc),
+    Trajectory = NewAcc.
+
+getDiagonal(X, 0, StepsX, StepsY, diag, [Row | RemainingBoard], Acc, Trajectory) :- /* Check if needs cuts */
+    isInRowIndex(X, Row, CurrSymbol),    /* Get Symbol from this Row */
+    append(Acc, [CurrSymbol], NewAcc),
+    AbsX is abs(StepsX),
+    IncX is StepsX div AbsX,
+    NewX is X+IncX,
+    NewStepsX is StepsX-IncX,
+    NewStepsY is StepsY-1,
+    !, getDiagonal(NewX, 0, NewStepsX, NewStepsY, diag, RemainingBoard, NewAcc, Trajectory).
+
+getDiagonal(X, Y, StepsX, StepsY, diag, [_ | RemainingBoard], Acc, Trajectory) :-
+    NewY is Y-1,
+    getDiagonal(X, NewY, StepsX, StepsY, diag, RemainingBoard, Acc, Trajectory).
+
+    
 
 /* Acceptance states (After flattening trajectory into a row) */
 isValidMove(_, [], _, _) :- !, fail.
@@ -169,3 +196,4 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
     placeInRow(NewIdx, T, Row, NewAcc, Symbol).
 
 /* --------------------------------------------------------------- */
+
