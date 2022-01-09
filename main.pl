@@ -67,6 +67,15 @@ isValidMove(X, Y, Steps, vert, Board, Symbol) :-
     !, transpose(Board, NewBoard),
     isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
 
+/* Diagonal */
+isValidMove(X, Y, Steps, diag, Board, Symbol) :-
+    !, transpose(Board, NewBoard),
+    isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
+
+isValidMove(X, Y, Steps, diag, Board, Symbol, Acc) :-
+    !, transpose(Board, NewBoard),
+    isValidMove(Y, X, Steps, hor, NewBoard, Symbol).
+
 /* Acceptance states (After flattening trajectory into a row) */
 isValidMove(_, [], _, _) :- !, fail.
 isValidMove(_,_,_,3) :- !, fail.  /* if it finds 2 allies */
@@ -117,9 +126,9 @@ moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
 
 
 /* Function to move a Symbol Steps positions in diagonal */
-moveXYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
-    NewX is X+Steps,
-    NewY is Y+Steps,
+moveXYAxis(X, Y, StepsX, StepsY, Board, ResultingBoard, Symbol) :- 
+    NewX is X+StepsX,
+    NewY is Y+StepsY,
     NewX >= 0, NewX =< 7, 
     NewY >= 0, NewY =< 7,
     placeSymbol(NewX, NewY, Board, AuxBoard, [], Symbol),
