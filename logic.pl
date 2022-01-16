@@ -2,6 +2,8 @@
 
 /* --------------------------------------------------------------- */
 
+/* --------------------------------------------------------------- */
+
 /* Function to check if a Symbol is in position X Y of the Board */
 isInCell(X, 0, [Row | _], Symbol):-
     !, isInRowIndex(X, Row, Symbol).
@@ -196,6 +198,9 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
     placeInRow(NewIdx, T, Row, NewAcc, Symbol).
 
 /* --------------------------------------------------------------- */
+
+/* --------------------------------------------------------------- */
+
 countPiecesInRow(Row, NinjaCount, SamuraiCount) :- countPiecesInRow(Row, NinjaCount, SamuraiCount, 0, 0), !.
 
 countPiecesInRow([], NinjaCount, SamuraiCount, NinjaCount, SamuraiCount) :- !.
