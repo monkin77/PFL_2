@@ -43,7 +43,7 @@ parseMove(StartRow/StartCol, EndRow/EndCol, Direction, RetStepsX, RetStepsY):-
 
 /* --------------------------------------------------------------- */
 
-choose_move(Board-1, _, Move):-
+choose_move(Board-Player, human, Move):-
     write('Choose the piece you want to move\n'),
     getCoords(StartRow, StartCol),
     isPlayerPiece(Board, StartRow, StartCol, Player),
@@ -51,7 +51,9 @@ choose_move(Board-1, _, Move):-
     parseMove(StartRow/StartCol, EndRow/EndCol, Direction, StepsX, StepsY),
     Move = StartRow/StartCol/StepsX/StepsY/Direction.
 
-choose_move(Board-Player, computer-Level, Move).
+choose_move(Board-1, computer-_, Move).
+
+choose_move(Board-2, computer-Level, Move).
     /*
     - GET VALID MOVES
     - CHOOSE A MOVE FROM LIST
