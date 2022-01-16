@@ -43,7 +43,7 @@ parseMove(StartRow/StartCol, EndRow/EndCol, Direction, RetStepsX, RetStepsY):-
 
 /* --------------------------------------------------------------- */
 
-choose_move(Board-Player, human, Move):-
+choose_move(Board-1, _, Move):-
     write('Choose the piece you want to move\n'),
     getCoords(StartRow, StartCol),
     isPlayerPiece(Board, StartRow, StartCol, Player),

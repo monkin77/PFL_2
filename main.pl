@@ -4,8 +4,7 @@
 :- consult('input.pl').
 
 /* Move -> startRow/startCol/StepsX/StepsY/Direction */
-
-/* Change GameState-Player to GameState = Board-Player */
+/* GameState = Board-Player. Player -> 1 | 2 */
 initial_state(Board-Player):-
     initialBoard(Board),
     Player = 1.
