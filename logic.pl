@@ -1,6 +1,18 @@
 :-use_module(library(lists)).
 
 /* --------------------------------------------------------------- */
+% initialBoard
+
+initialBoard([
+[ninja,ninja,ninja,ninja,ninja,ninja,ninja,ninja],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
+]).
 
 /* --------------------------------------------------------------- */
 
@@ -223,3 +235,6 @@ move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
     NewGameState = NewBoard-Player.
 
 /* --------------------------------------------------------------- */
+/* Pass turn to next player */
+next_player(Board-1, Board-2).
+next_player(Board-2, Board-1). 
