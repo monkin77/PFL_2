@@ -72,9 +72,9 @@ printCurrentPlayer(Player):-
 
 /* --------------------------------------------------------------- */
 
-display_game(GameState-Player):-
+display_game(Board-Player):-
     printBoardHeader,
-    printBoard(GameState, 1),
+    printBoard(Board, 1),
     printBoardFooter,
     printCurrentPlayer(Player).
 

@@ -147,24 +147,6 @@ moveXYAxis(X, Y, StepsX, StepsY, Board, ResultingBoard, Symbol) :-
     placeSymbol(NewX, NewY, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
 
-
-move(Board-Player, StartRow/StartCol/StepsX/_/hor, NewGameState):-
-    piece(Player, P),
-    moveXAxis(StartCol, StartRow, StepsX, Board, NewBoard, P),
-    NewGameState = NewBoard-Player.
-
-move(Board-Player, StartRow/StartCol/_/StepsY/vert, NewGameState):-
-    piece(Player, P),
-    moveYAxis(StartCol, StartRow, StepsY, Board, NewBoard, P),
-    NewGameState = NewBoard-Player.
-
-move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
-    piece(Player, P),
-    moveXYAxis(StartCol, StartRow, StepsX, StepsY, Board, NewBoard, P),
-    NewGameState = NewBoard-Player.
-
-/* --------------------------------------------------------------- */
-
 /* --------------------------------------------------------------- */
 
 placeSymbol(_, _, [], Acc, Acc, _).
@@ -222,3 +204,22 @@ isEndGame([Row | RemainingBoard], NinjaCount, SamuraiCount) :-
     NewNinjaCount is NinjaCount + RowNinjaCount,
     NewSamuraiCount is SamuraiCount + RowSamuraiCount,
     isEndGame(RemainingBoard, NewNinjaCount, NewSamuraiCount).
+
+/* --------------------------------------------------------------- */
+
+move(Board-Player, StartRow/StartCol/StepsX/_/hor, NewGameState):-
+    piece(Player, P),
+    moveXAxis(StartCol, StartRow, StepsX, Board, NewBoard, P),
+    NewGameState = NewBoard-Player.
+
+move(Board-Player, StartRow/StartCol/_/StepsY/vert, NewGameState):-
+    piece(Player, P),
+    moveYAxis(StartCol, StartRow, StepsY, Board, NewBoard, P),
+    NewGameState = NewBoard-Player.
+
+move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
+    piece(Player, P),
+    moveXYAxis(StartCol, StartRow, StepsX, StepsY, Board, NewBoard, P),
+    NewGameState = NewBoard-Player.
+
+/* --------------------------------------------------------------- */

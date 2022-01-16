@@ -43,10 +43,10 @@ parseMove(StartRow/StartCol, EndRow/EndCol, Direction, RetStepsX, RetStepsY):-
 
 /* --------------------------------------------------------------- */
 
-choose_move(GameState, Player, Move):-
+choose_move(Board-Player, Move):-
     write('Choose the piece you want to move\n'),
     getCoords(StartRow, StartCol),
-    isPlayerPiece(GameState, StartRow, StartCol, Player),
+    isPlayerPiece(Board, StartRow, StartCol, Player),
     getCoords(EndRow, EndCol),
     parseMove(StartRow/StartCol, EndRow/EndCol, Direction, StepsX, StepsY),
     Move = StartRow/StartCol/StepsX/StepsY/Direction.
