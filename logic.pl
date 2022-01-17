@@ -142,10 +142,6 @@ moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
     NewY is Y + Steps,
     NewY >= 0,
     NewY =< 7,
-    /* TO DO
-    verificar se a posição aonde colocar está empty
-    verificar se o elemento na posicao inicial é igual ao symbol
-    */
     placeSymbol(X, NewY, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
 
