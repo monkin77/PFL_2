@@ -1,13 +1,5 @@
-initialBoard([
-[ninja,ninja,ninja,ninja,ninja,ninja,ninja,ninja],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[empty,empty,empty,empty,empty,empty,empty,empty],
-[samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
-]).
+/* --------------------------------------------------------------- */
+clear_screen :- write('\33\[2J').
 
 /* --------------------------------------------------------------- */
 
