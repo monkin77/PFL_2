@@ -14,6 +14,10 @@ play_game(Opponent):-
     display_game(GameState),
     game_cycle(GameState, Opponent).
     
+/* game_cycle(GameState, _) :-
+    game_over(GameState, Winner), !,
+    congratulate(Winner). */
+
 game_cycle(GameState, Opponent) :-
     choose_move(GameState, Opponent, Move),
     move(GameState, Move, UpdatedGameState),
@@ -23,3 +27,8 @@ game_cycle(GameState, Opponent) :-
 
 play :- mainMenu.
 
+/*
+    - GET VALID MOVES
+    - CHOOSE A MOVE FROM LIST
+    - ASK IF WE SHOULD PRINT WHENEVER THERE IS A INVALID INPUT OR IF IT IS ALREADY FINE AS IS
+*/

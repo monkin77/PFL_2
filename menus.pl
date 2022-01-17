@@ -4,7 +4,7 @@ mainMenu :-
 
 getOption :-
     write('Insert an option -> '),
-    read(Option),
+    read_until_between(0, 2, Option),
     handleOption(Option).
 
 handleOption(1) :-
