@@ -244,9 +244,10 @@ countBoardPieces([Row | RemainingBoard], NinjaCount, SamuraiCount, NinjaAcc, Sam
     countPiecesInRow(Row, RowNinjaCount, RowSamuraiCount),
     NewNinjaCount is NinjaAcc + RowNinjaCount,
     NewSamuraiCount is SamuraiAcc + RowSamuraiCount,
-    countBoardPieces(RemainingBoard, NewNinjaCount, NewSamuraiCount).
+    countBoardPieces(RemainingBoard, NinjaCount, SamuraiCount, NewNinjaCount, NewSamuraiCount).
 
 /* --------------------------------------------------------------- */
+% (Board, Player, Value)
 value(Board, 1, Value) :-
     countBoardPieces(Board, NinjaCount, SamuraiCount),
     Value is SamuraiCount - NinjaCount.

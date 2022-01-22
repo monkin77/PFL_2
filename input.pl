@@ -79,7 +79,7 @@ checkPlayerMove(_, _) :- showError('Invalid move! Please try again.\n\n').
 /* --------------------------------------------------------------- */
 choose_move(Board-Player, human, Move) :-
     printCurrentPlayer(Player), !, 
-    repeat,
+    repeat, 
     write('Choose the piece you want to move\n'),
     getCoords(StartRow, StartCol),
     isPlayerPiece(Board, StartRow, StartCol, Player),
@@ -104,5 +104,20 @@ choose_move(Board-Player, _-Level, Move) :-
 choose_move(easy, _GameState, Moves, Move) :-
     !, random_select(Move, Moves, _Rest).
 
-choose_move(_, GameState, Moves, Move) :-
-    random_select(Move, Moves, _Rest).
+% Hard Mode
+choose_move(_, Board-Player, Moves, Move) :-
+    value(Board, Player, OldVal),
+    findBestMove(Board-Player, OldVal, Moves, Move).
+
+/* --------------------------------------------------------------- */
+findBestMove(_, _, [Move], Move).
+
+findBestMove(Board-Player, OldVal, [CurrMove | _], Move) :-
+    move(Board-Player, CurrMove, NewBoard-_),
+    value(NewBoard, Player, NewVal),
+    NewVal > OldVal, !,
+    Move = CurrMove.
+
+% If current move is not optimal
+findBestMove(GameState, OldVal, [_ | Moves], Move) :-
+    findBestMove(GameState, OldVal, Moves, Move).

@@ -11,10 +11,10 @@ handleOption(1) :-
     !, play_game(human).
 
 handleOption(2) :-
-    !, play_game(computer-easy).
+    !, play_game(computer-hard).
 
 handleOption(3) :-
-    !, play_game(computer2-easy).
+    !, play_game(computer2-hard).
 
 handleOption(0) :-
     write('Leaving...\n').
