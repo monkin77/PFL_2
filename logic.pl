@@ -12,9 +12,27 @@ initialBoard([
 [samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
 ]).
 
+testBoard([
+[ninja,ninja,ninja,ninja,ninja,ninja,ninja,ninja],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
+]).
+
 /* --------------------------- Utils ----------------------------- */
-opponent(1, 2).  
-opponent(2, 1).
+/* Pass turn to next player */
+next_player(Board-1, Board-2).
+next_player(Board-2, Board-1). 
+
+/* Decrement absolute value */
+decrementAbs(Val, NewVal) :-
+    AbsVal is abs(Val),
+    IncVal is Val div AbsVal,
+    NewVal is Val-IncVal.
+
+/* Min */
+minimum(X1, X2, X3) :-
+    X1 =< X2, !, X3 = X1.
+minimum(_, X2, X2). 
 
 /* --------------------------------------------------------------- */
 
@@ -55,9 +73,6 @@ isValidMove(Board-Player, Row/Col/_/StepsY/vert) :-
 isValidMove(Board-Player, Row/Col/StepsX/StepsY/diag) :-
     piece(Player, Symbol), 
     isValidMove(Col, Row, StepsX, StepsY, diag, Board, Symbol).
-
-isValidMove(_, _) :-
-    showError('Invalid move! Please try again.\n\n').
 
 /*  Last Argument: 0 -> NotFoundAlly   1 -> FoundMovingPiece    2 -> Found Ally  */ 
 
@@ -206,13 +221,7 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
     append(Acc, [H], NewAcc),
     placeInRow(NewIdx, T, Row, NewAcc, Symbol).
 
-/* --------------------------------------------------------------- */
-
-/* --------------------------Game Over----------------------------- */
-game_over(Board-Player, Winner) :-
-    isEndGame(Board), !,
-    opponent(Player, Winner).
-
+/* ----------------------- Evaluate Game --------------------------- */
 countPiecesInRow(Row, NinjaCount, SamuraiCount) :- countPiecesInRow(Row, NinjaCount, SamuraiCount, 0, 0), !.
 
 countPiecesInRow([], NinjaCount, SamuraiCount, NinjaCount, SamuraiCount) :- !.
@@ -225,15 +234,36 @@ countPiecesInRow([samurai | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
 countPiecesInRow([_ | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
     countPiecesInRow(T, NinjaCount, SamuraiCount, Acc1, Acc2).
 
-isEndGame(Board) :- isEndGame(Board, 0, 0).
+/* --------------------------------------------------------------- */
 
-isEndGame([], NinjaCount, SamuraiCount) :-
-    !, (NinjaCount =< 4; SamuraiCount =< 4).
-isEndGame([Row | RemainingBoard], NinjaCount, SamuraiCount) :-
+countBoardPieces(Board, NinjaCount, SamuraiCount) :-
+    countBoardPieces(Board, NinjaCount, SamuraiCount, 0, 0).
+
+countBoardPieces([], NinjaAcc, SamuraiAcc, NinjaAcc, SamuraiAcc).
+countBoardPieces([Row | RemainingBoard], NinjaCount, SamuraiCount, NinjaAcc, SamuraiAcc) :-
     countPiecesInRow(Row, RowNinjaCount, RowSamuraiCount),
-    NewNinjaCount is NinjaCount + RowNinjaCount,
-    NewSamuraiCount is SamuraiCount + RowSamuraiCount,
-    isEndGame(RemainingBoard, NewNinjaCount, NewSamuraiCount).
+    NewNinjaCount is NinjaAcc + RowNinjaCount,
+    NewSamuraiCount is SamuraiAcc + RowSamuraiCount,
+    countBoardPieces(RemainingBoard, NinjaCount, SamuraiCount, NewNinjaCount, NewSamuraiCount).
+
+/* --------------------------------------------------------------- */
+% (Board, Player, Value)
+value(Board, 1, Value) :-
+    countBoardPieces(Board, NinjaCount, SamuraiCount),
+    Value is SamuraiCount - NinjaCount.
+value(Board, 2, Value) :-
+    countBoardPieces(Board, NinjaCount, SamuraiCount),
+    Value is NinjaCount - SamuraiCount.
+    
+
+/* ------------------------- Game Over ----------------------------- */
+game_over(Board-Player, Winner) :-
+    isEndGame(Board), !,
+    next_player(Board-Player, Board-Winner).
+
+isEndGame(Board) :- 
+    countBoardPieces(Board, NinjaCount, SamuraiCount), !,
+    (NinjaCount =< 4; SamuraiCount =< 4).
 
 /* --------------------------------------------------------------- */
 
@@ -251,8 +281,3 @@ move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
     piece(Player, P),
     moveXYAxis(StartCol, StartRow, StepsX, StepsY, Board, NewBoard, P),
     NewGameState = NewBoard-Player.
-
-/* --------------------------------------------------------------- */
-/* Pass turn to next player */
-next_player(Board-1, Board-2).
-next_player(Board-2, Board-1). 
