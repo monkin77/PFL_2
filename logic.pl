@@ -221,13 +221,7 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
     append(Acc, [H], NewAcc),
     placeInRow(NewIdx, T, Row, NewAcc, Symbol).
 
-/* --------------------------------------------------------------- */
-
-/* --------------------------Game Over----------------------------- */
-game_over(Board-Player, Winner) :-
-    isEndGame(Board), !,
-    next_player(Board-Player, Board-Winner).
-
+/* ----------------------- Evaluate Game --------------------------- */
 countPiecesInRow(Row, NinjaCount, SamuraiCount) :- countPiecesInRow(Row, NinjaCount, SamuraiCount, 0, 0), !.
 
 countPiecesInRow([], NinjaCount, SamuraiCount, NinjaCount, SamuraiCount) :- !.
@@ -240,15 +234,35 @@ countPiecesInRow([samurai | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
 countPiecesInRow([_ | T], NinjaCount, SamuraiCount, Acc1, Acc2) :-
     countPiecesInRow(T, NinjaCount, SamuraiCount, Acc1, Acc2).
 
-isEndGame(Board) :- isEndGame(Board, 0, 0).
+/* --------------------------------------------------------------- */
 
-isEndGame([], NinjaCount, SamuraiCount) :-
-    !, (NinjaCount =< 4; SamuraiCount =< 4).
-isEndGame([Row | RemainingBoard], NinjaCount, SamuraiCount) :-
+countBoardPieces(Board, NinjaCount, SamuraiCount) :-
+    countBoardPieces(Board, NinjaCount, SamuraiCount, 0, 0).
+
+countBoardPieces([], NinjaAcc, SamuraiAcc, NinjaAcc, SamuraiAcc).
+countBoardPieces([Row | RemainingBoard], NinjaCount, SamuraiCount, NinjaAcc, SamuraiAcc) :-
     countPiecesInRow(Row, RowNinjaCount, RowSamuraiCount),
-    NewNinjaCount is NinjaCount + RowNinjaCount,
-    NewSamuraiCount is SamuraiCount + RowSamuraiCount,
-    isEndGame(RemainingBoard, NewNinjaCount, NewSamuraiCount).
+    NewNinjaCount is NinjaAcc + RowNinjaCount,
+    NewSamuraiCount is SamuraiAcc + RowSamuraiCount,
+    countBoardPieces(RemainingBoard, NewNinjaCount, NewSamuraiCount).
+
+/* --------------------------------------------------------------- */
+value(Board, 1, Value) :-
+    countBoardPieces(Board, NinjaCount, SamuraiCount),
+    Value is SamuraiCount - NinjaCount.
+value(Board, 2, Value) :-
+    countBoardPieces(Board, NinjaCount, SamuraiCount),
+    Value is NinjaCount - SamuraiCount.
+    
+
+/* ------------------------- Game Over ----------------------------- */
+game_over(Board-Player, Winner) :-
+    isEndGame(Board), !,
+    next_player(Board-Player, Board-Winner).
+
+isEndGame(Board) :- 
+    countBoardPieces(Board, NinjaCount, SamuraiCount), !,
+    (NinjaCount =< 4; SamuraiCount =< 4).
 
 /* --------------------------------------------------------------- */
 

@@ -102,4 +102,7 @@ choose_move(Board-Player, _-Level, Move) :-
 
 /* --------------------------------------------------------------- */
 choose_move(easy, _GameState, Moves, Move) :-
+    !, random_select(Move, Moves, _Rest).
+
+choose_move(_, GameState, Moves, Move) :-
     random_select(Move, Moves, _Rest).
