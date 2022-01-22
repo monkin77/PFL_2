@@ -71,6 +71,12 @@ parseMove(_, _, _, _, _) :-
     showError('Invalid move! Please try again.\n\n').
 
 /* --------------------------------------------------------------- */
+checkPlayerMove(Board-Player, CurrMove) :-
+    isValidMove(Board-Player, CurrMove), !.
+
+checkPlayerMove(_, _) :- showError('Invalid move! Please try again.\n\n').
+
+/* --------------------------------------------------------------- */
 choose_move(Board-Player, human, Move) :-
     !, printCurrentPlayer(Player),
     repeat,
@@ -81,12 +87,20 @@ choose_move(Board-Player, human, Move) :-
     getCoords(EndRow, EndCol),
     parseMove(StartRow/StartCol, EndRow/EndCol, Direction, StepsX, StepsY),
     CurrMove = StartRow/StartCol/StepsX/StepsY/Direction,
-    isValidMove(Board-Player, CurrMove),
+    checkPlayerMove(Board-Player, CurrMove),
     !, Move = CurrMove.
 
 % P1 turn against a bot
-choose_move(Board-1, computer-Level, Move) :- !, choose_move(Board-1, human, Move).
+choose_move(Board-1, computer-_, Move) :-
+    !, printCurrentPlayer(1),
+    choose_move(Board-1, human, Move).
 
-% Bot turn
-choose_move(Board-PlayerNum, _-Level, Move) :-
-    !.
+% Bot turn against a player or Bot V.S Bot (computer-2)
+choose_move(Board-Player, _-Level, Move) :-
+    !, printCurrentPlayer(Player),
+    valid_moves(Board-Player, Moves),
+    choose_move(Level, Board-Player, Moves, Move).
+
+/* --------------------------------------------------------------- */
+choose_move(easy, _GameState, Moves, Move) :-
+    random_select(Move, Moves, _Rest).

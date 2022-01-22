@@ -64,7 +64,7 @@ printCurrentPlayer(Player):-
 
 /* --------------------------------------------------------------- */
 
-display_game(Board-Player):-
+display_game(Board-_):-
     printBoardHeader,
     printBoard(Board, 1),
     printBoardFooter.

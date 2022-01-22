@@ -12,9 +12,27 @@ initialBoard([
 [samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
 ]).
 
+testBoard([
+[ninja,ninja,ninja,ninja,ninja,ninja,ninja,ninja],
+[empty,empty,empty,empty,empty,empty,empty,empty],
+[samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
+]).
+
 /* --------------------------- Utils ----------------------------- */
-opponent(1, 2).  
-opponent(2, 1).
+/* Pass turn to next player */
+next_player(Board-1, Board-2).
+next_player(Board-2, Board-1). 
+
+/* Decrement absolute value */
+decrementAbs(Val, NewVal) :-
+    AbsVal is abs(Val),
+    IncVal is Val div AbsVal,
+    NewVal is Val-IncVal.
+
+/* Min */
+minimum(X1, X2, X3) :-
+    X1 =< X2, !, X3 = X1.
+minimum(_, X2, X2). 
 
 /* --------------------------------------------------------------- */
 
@@ -55,9 +73,6 @@ isValidMove(Board-Player, Row/Col/_/StepsY/vert) :-
 isValidMove(Board-Player, Row/Col/StepsX/StepsY/diag) :-
     piece(Player, Symbol), 
     isValidMove(Col, Row, StepsX, StepsY, diag, Board, Symbol).
-
-isValidMove(_, _) :-
-    showError('Invalid move! Please try again.\n\n').
 
 /*  Last Argument: 0 -> NotFoundAlly   1 -> FoundMovingPiece    2 -> Found Ally  */ 
 
@@ -211,7 +226,7 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
 /* --------------------------Game Over----------------------------- */
 game_over(Board-Player, Winner) :-
     isEndGame(Board), !,
-    opponent(Player, Winner).
+    next_player(Board-Player, Board-Winner).
 
 countPiecesInRow(Row, NinjaCount, SamuraiCount) :- countPiecesInRow(Row, NinjaCount, SamuraiCount, 0, 0), !.
 
@@ -251,8 +266,3 @@ move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
     piece(Player, P),
     moveXYAxis(StartCol, StartRow, StepsX, StepsY, Board, NewBoard, P),
     NewGameState = NewBoard-Player.
-
-/* --------------------------------------------------------------- */
-/* Pass turn to next player */
-next_player(Board-1, Board-2).
-next_player(Board-2, Board-1). 
