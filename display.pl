@@ -67,8 +67,11 @@ printCurrentPlayer(Player):-
 display_game(Board-Player):-
     printBoardHeader,
     printBoard(Board, 1),
-    printBoardFooter,
-    printCurrentPlayer(Player).
+    printBoardFooter.
+
+/* --------------------------------------------------------------- */
+congratulate(Winner) :-
+    write('Player '), write(Winner), write(' won the game!\n\n').
 
 
 

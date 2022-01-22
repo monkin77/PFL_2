@@ -74,6 +74,7 @@ parseMove(_, _, _, _, _) :-
 
 
 choose_move(Board-Player, human, Move):-
+    printCurrentPlayer(Player),
     repeat,
     write('Choose the piece you want to move\n'),
     getCoords(StartRow, StartCol),
@@ -81,7 +82,9 @@ choose_move(Board-Player, human, Move):-
     write('Choose the cell you want to move towards\n'),
     getCoords(EndRow, EndCol),
     parseMove(StartRow/StartCol, EndRow/EndCol, Direction, StepsX, StepsY),
-    !, Move = StartRow/StartCol/StepsX/StepsY/Direction.
+    CurrMove = StartRow/StartCol/StepsX/StepsY/Direction,
+    isValidMove(Board-Player, CurrMove),
+    !, Move = CurrMove.
 
 choose_move(Board-1, computer-_, Move).
 

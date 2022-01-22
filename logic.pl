@@ -12,6 +12,10 @@ initialBoard([
 [samurai,samurai,samurai,samurai,samurai,samurai,samurai,samurai]
 ]).
 
+/* --------------------------- Utils ----------------------------- */
+opponent(1, 2).  
+opponent(2, 1).
+
 /* --------------------------------------------------------------- */
 
 /* Function to check if a Symbol is in position X Y of the Board */
@@ -38,10 +42,27 @@ isInRowIndex(X, [_ | T], Symbol):-
     !, isInRowIndex(NewX, T, Symbol).
 
 /* ------------------------Validation----------------------------- */
+
+/* ------------------------ MAIN isValidMove --------------------- */
+isValidMove(Board-Player, Row/Col/StepsX/_/hor) :-
+    piece(Player, Symbol), 
+    isValidMove(Col, Row, StepsX, hor, Board, Symbol).
+
+isValidMove(Board-Player, Row/Col/_/StepsY/vert) :-
+    piece(Player, Symbol), 
+    isValidMove(Col, Row, StepsY, vert, Board, Symbol).
+
+isValidMove(Board-Player, Row/Col/StepsX/StepsY/diag) :-
+    piece(Player, Symbol), 
+    isValidMove(Col, Row, StepsX, StepsY, diag, Board, Symbol).
+
+isValidMove(_, _) :-
+    showError('Invalid move! Please try again.\n\n').
+
 /*  Last Argument: 0 -> NotFoundAlly   1 -> FoundMovingPiece    2 -> Found Ally  */ 
 
 /* Horizontal  */
-clearPrefix(0, Steps, hor, Row, Symbol) :- !, isValidMove(Steps, Row, Symbol, 0).
+clearPrefix(0, Steps, hor, Row, Symbol) :- !, validateTrajectory(Steps, Row, Symbol, 0).
 clearPrefix(_, _, hor, [], _) :- !, fail.
 clearPrefix(X, Steps, hor, [_ | T], Symbol) :-
     NewX is X-1,
@@ -73,12 +94,12 @@ isValidMove(X, Y, StepsX, StepsY, diag, Board, Symbol) :-   /* This might return
     getDiagonal(NewX, NewY, NewStepsX, NewStepsY, diag, Board, [], Trajectory),
     reverse(Trajectory, NewTrajectory),
     AbsX is abs(StepsX),
-    isValidMove(AbsX, NewTrajectory, Symbol, 0).
+    validateTrajectory(AbsX, NewTrajectory, Symbol, 0).
 isValidMove(X, Y, StepsX, StepsY, diag, Board, Symbol) :-
     !, StepsY >= 0,
     getDiagonal(X, Y, StepsX, StepsY, diag, Board, [], Trajectory),
     AbsX is abs(StepsX),
-    isValidMove(AbsX, Trajectory, Symbol, 0).
+    validateTrajectory(AbsX, Trajectory, Symbol, 0).
 
 /* Iterate Matrix to find diagonal */
 getDiagonal(X, 0, _, 0, diag, [Row | _], Acc, Trajectory) :- /* Base case */
@@ -103,24 +124,24 @@ getDiagonal(X, Y, StepsX, StepsY, diag, [_ | RemainingBoard], Acc, Trajectory) :
     
 
 /* Acceptance states (After flattening trajectory into a row) */
-isValidMove(_, [], _, _) :- !, fail.
-isValidMove(_,_,_,3) :- !, fail.  /* if it finds 2 allies */
-isValidMove(0, [empty | _], _, AllyCount) :-
+validateTrajectory(_, [], _, _) :- !, fail.
+validateTrajectory(_,_,_,3) :- !, fail.  /* if it finds 2 allies */
+validateTrajectory(0, [empty | _], _, AllyCount) :-
     !, AllyCount < 2.
-isValidMove(0, [Symbol | _], Symbol, _) :-
+validateTrajectory(0, [Symbol | _], Symbol, _) :-
     !, fail.
-isValidMove(0, [_ | _], _, AllyCount) :-
+validateTrajectory(0, [_ | _], _, AllyCount) :-
     !, AllyCount =:= 2.
 
-isValidMove(Steps, [Symbol | RemainingRow], Symbol, AllyCount) :-
+validateTrajectory(Steps, [Symbol | RemainingRow], Symbol, AllyCount) :-
     AllyCount < 2, NewAllyCount is AllyCount+1,
     NewSteps is Steps - 1,
-    !, isValidMove(NewSteps, RemainingRow, Symbol, NewAllyCount).
-isValidMove(Steps, [empty | RemainingRow], Symbol, AllyCount) :-
+    !, validateTrajectory(NewSteps, RemainingRow, Symbol, NewAllyCount).
+validateTrajectory(Steps, [empty | RemainingRow], Symbol, AllyCount) :-
     AllyCount =< 2,
     NewSteps is Steps - 1,
-    !, isValidMove(NewSteps, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
-isValidMove(_, _, _, _) :-     /* enemy symbol*/
+    !, validateTrajectory(NewSteps, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
+validateTrajectory(_, _, _, _) :-     /* enemy symbol*/
     !, fail.
 
 /* --------------------------------------------------------------- */
@@ -187,7 +208,10 @@ placeInRow(Idx, [H|T], Row, Acc, Symbol):-
 
 /* --------------------------------------------------------------- */
 
-/* --------------------------------------------------------------- */
+/* --------------------------Game Over----------------------------- */
+game_over(Board-Player, Winner) :-
+    isEndGame(Board), !,
+    opponent(Player, Winner).
 
 countPiecesInRow(Row, NinjaCount, SamuraiCount) :- countPiecesInRow(Row, NinjaCount, SamuraiCount, 0, 0), !.
 

@@ -17,9 +17,9 @@ play_game(Opponent):-
     display_game(GameState),
     game_cycle(GameState, Opponent).
     
-/* game_cycle(GameState, _) :-
+game_cycle(GameState, _) :-
     game_over(GameState, Winner), !,
-    congratulate(Winner). */
+    congratulate(Winner).
 
 game_cycle(GameState, Opponent) :-
     choose_move(GameState, Opponent, Move),
