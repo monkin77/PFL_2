@@ -1,3 +1,6 @@
+:-use_module(library(lists)).
+:-use_module(library(between)).
+
 :- consult('menus.pl').
 :- consult('logic.pl').
 :- consult('display.pl').

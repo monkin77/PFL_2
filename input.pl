@@ -1,10 +1,6 @@
 showError(Message) :-
     write(Message), fail.
 /* --------------------------------------------------------------- */
-between(Min, Max, Val) :-
-    Min =< Val,
-    Max >= Val.
-
 read_number(X) :- read_number(X, 0).
 
 /* Base Case: If we reach a Line Feed, stop reading  */
