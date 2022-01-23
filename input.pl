@@ -96,6 +96,7 @@ choose_move(Board-1, computer-_, Move) :-
 % Bot turn against a player or Bot V.S Bot (computer-2)
 choose_move(Board-Player, _-Level, Move) :-
     printCurrentPlayer(Player), !, 
+    sleep(1),
     valid_moves(Board-Player, Moves),
     choose_move(Level, Board-Player, Moves, Move).
 
