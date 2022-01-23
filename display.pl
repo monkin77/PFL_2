@@ -8,6 +8,8 @@ symbol(empty,S) :- S=' '.
 symbol(ninja,S) :- S='N'.
 symbol(samurai,S) :- S='S'.
 
+team(ninja, 'Ninja').
+team(samurai, 'Samurai').
 /* --------------------------------------------------------------- */
 
 print_n(_, 0).
@@ -60,8 +62,9 @@ printBoard([H|T], Index):-
 /* --------------------------------------------------------------- */
 
 printCurrentPlayer(Board, Player):-
+    piece(Player, Symbol), team(Symbol, Army),
     write('Current Player: '), 
-    write(Player),
+    write(Army),
     write('.  Score: '), value(Board, Player, Value),
     write(Value), nl.
 
