@@ -64,8 +64,11 @@ printCurrentPlayer(Player):-
     write(Player), nl.
 
 /* --------------------------------------------------------------- */
+/* Clear Board after player1 move and before his move is displayed */
+display_game(_-2):-
+    clear_screen, fail.
 
-display_game(Board-_):-
+display_game(Board-_Player):-
     printBoardHeader,
     printBoard(Board, 1).
 
