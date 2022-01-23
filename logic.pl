@@ -293,11 +293,11 @@ move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
 /* ----------------------- Armies --------------------------- */
 /* Add methods that identify each player number to its piece and define the starting player */
 manageArmies(samurai, StartingPlayer) :-
-    assertz( ( piece(1, Symbol) :- Symbol = samurai ) ),
-    assertz( ( piece(2, Symbol) :- Symbol = ninja ) ),
+    assert( ( piece(1, Symbol) :- Symbol = samurai ) ),
+    assert( ( piece(2, Symbol) :- Symbol = ninja ) ),
     StartingPlayer = 1.
 
 manageArmies(ninja, StartingPlayer) :-
-    assertz( ( piece(1, Symbol) :- Symbol = ninja ) ),
-    assertz( ( piece(2, Symbol) :- Symbol = samurai ) ),
-    StartingPlayer = 1.
+    assert( ( piece(1, Symbol) :- Symbol = ninja ) ),
+    assert( ( piece(2, Symbol) :- Symbol = samurai ) ),
+    StartingPlayer = 2.

@@ -79,7 +79,8 @@ display_game(Board-_Player):-
 
 /* --------------------------------------------------------------- */
 congratulate(Winner) :-
-    write('Player '), write(Winner), write(' won the game!\n\n').
+    piece(Winner, Symbol), team(Symbol, Army),
+    write('Team '), write(Army), write(' won the game!\n\n').
 
 
 
