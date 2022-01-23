@@ -251,10 +251,15 @@ countBoardPieces([Row | RemainingBoard], NinjaCount, SamuraiCount, NinjaAcc, Sam
 
 /* --------------------------------------------------------------- */
 % (Board, Player, Value)
-value(Board, 1, Value) :-
+value(Board, Player, Value) :-
+    piece(Player, Symbol),
+    Symbol = samurai, !,
     countBoardPieces(Board, NinjaCount, SamuraiCount),
     Value is SamuraiCount - NinjaCount.
-value(Board, 2, Value) :-
+
+value(Board, Player, Value) :-
+    piece(Player, Symbol),
+    Symbol = ninja, !,
     countBoardPieces(Board, NinjaCount, SamuraiCount),
     Value is NinjaCount - SamuraiCount.
     

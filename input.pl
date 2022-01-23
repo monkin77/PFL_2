@@ -43,10 +43,9 @@ getCoords(_, _) :-
 
 /* --------------------------------------------------------------- */
 
-isPlayerPiece(GameState, Row, Column, 1):-
-    isInCell(Column, Row, GameState, samurai), !.
-isPlayerPiece(GameState, Row, Column, 2):-
-    isInCell(Column, Row, GameState, ninja), !.
+isPlayerPiece(Board, Row, Column, Player):-
+    piece(Player, Symbol),
+    isInCell(Column, Row, Board, Symbol), !.
 
 isPlayerPiece(_, _, _, _) :-
     showError('That cell does not contain one of your pieces! Please try again.\n\n').
@@ -107,11 +106,12 @@ choose_move(easy, _GameState, Moves, Move) :-
 % Hard Mode
 choose_move(_, Board-Player, Moves, Move) :-
     value(Board, Player, OldVal),
-    findBestMove(Board-Player, OldVal, Moves, Move).
+    findBestMove(Board-Player, OldVal, Moves, Move), !.
+
+choose_move(_, _GameState, Moves, Move) :-
+    !, random_select(Move, Moves, _Rest).
 
 /* --------------------------------------------------------------- */
-findBestMove(_, _, [Move], Move).
-
 findBestMove(Board-Player, OldVal, [CurrMove | _], Move) :-
     move(Board-Player, CurrMove, NewBoard-_),
     value(NewBoard, Player, NewVal),

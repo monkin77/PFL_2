@@ -9,7 +9,9 @@
 :- consult('bot.pl').
 
 /* Move -> startRow/startCol/StepsX/StepsY/Direction */
-/* GameState = Board-Player. Player -> 1 | 2 */
+/* GameState = Board-Player. 
+Player -> 1 | 2 --- This player numbers are independent from their army 
+*/
 initial_state(P1Army, Board-Player):-
     initialBoard(Board),
     manageArmies(P1Army, Player).
