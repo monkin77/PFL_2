@@ -4,10 +4,12 @@ clear_screen :- write('\33\[2J').
 /* --------------------------------------------------------------- */
 
 /* Board */
-symbol(empty,S) :- S='-'.
+symbol(empty,S) :- S=' '.
 symbol(ninja,S) :- S='N'.
 symbol(samurai,S) :- S='S'.
 
+team(ninja, 'Ninja').
+team(samurai, 'Samurai').
 /* --------------------------------------------------------------- */
 
 print_n(_, 0).
@@ -44,26 +46,36 @@ printBoardRow([H | T]):-
     printBoardRow(T).
     
 /* --------------------------------------------------------------- */
+printBoardEmpty:-
+    write('---|---|---|---|---|---|---|---|---|\n').
+
+/* --------------------------------------------------------------- */
 
 printBoard([], _).
 printBoard([H|T], Index):-
     NewIndex is Index + 1,
     print_text(Index, 1), write('|'),
     printBoardRow(H),
+    printBoardEmpty,
     printBoard(T, NewIndex).
 
 /* --------------------------------------------------------------- */
 
-printCurrentPlayer(Player):-
+printCurrentPlayer(Board, Player):-
+    piece(Player, Symbol), team(Symbol, Army),
     write('Current Player: '), 
-    write(Player), nl.
+    write(Army),
+    write('.  Score: '), value(Board, Player, Value),
+    write(Value), nl.
 
 /* --------------------------------------------------------------- */
+/* Clear Board after player1 move and before his move is displayed */
+display_game(_-2):-
+    clear_screen, fail.
 
-display_game(Board-_):-
+display_game(Board-_Player):-
     printBoardHeader,
-    printBoard(Board, 1),
-    printBoardFooter.
+    printBoard(Board, 1).
 
 /* --------------------------------------------------------------- */
 congratulate(Winner) :-
