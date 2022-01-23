@@ -4,7 +4,7 @@ clear_screen :- write('\33\[2J').
 /* --------------------------------------------------------------- */
 
 /* Board */
-symbol(empty,S) :- S='-'.
+symbol(empty,S) :- S=' '.
 symbol(ninja,S) :- S='N'.
 symbol(samurai,S) :- S='S'.
 
@@ -44,12 +44,17 @@ printBoardRow([H | T]):-
     printBoardRow(T).
     
 /* --------------------------------------------------------------- */
+printBoardEmpty:-
+    write('---|---|---|---|---|---|---|---|---|\n').
+
+/* --------------------------------------------------------------- */
 
 printBoard([], _).
 printBoard([H|T], Index):-
     NewIndex is Index + 1,
     print_text(Index, 1), write('|'),
     printBoardRow(H),
+    printBoardEmpty,
     printBoard(T, NewIndex).
 
 /* --------------------------------------------------------------- */
@@ -62,8 +67,7 @@ printCurrentPlayer(Player):-
 
 display_game(Board-_):-
     printBoardHeader,
-    printBoard(Board, 1),
-    printBoardFooter.
+    printBoard(Board, 1).
 
 /* --------------------------------------------------------------- */
 congratulate(Winner) :-
