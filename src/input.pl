@@ -21,14 +21,14 @@ read_until_between(Min, Max, X) :-
 /* --------------------------------------------------------------- */
 
 getRow(Row):-
-    write('Row -> '),
-    read_until_between(1, 8, Row).
+    write('Row -> '), boardSize(Size),
+    read_until_between(1, Size, Row).
 
 /* --------------------------------------------------------------- */
 
 getColumn(Column):-
-    write('Column -> '),
-    read_until_between(1, 8, Column),
+    write('Column -> '), boardSize(Size),
+    read_until_between(1, Size, Column),
     nl.
 
 /* --------------------------------------------------------------- */

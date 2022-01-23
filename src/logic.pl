@@ -22,6 +22,9 @@ testBoard([
 /* Players */
 :-dynamic piece/2.
 
+/* BoardSize */
+:-dynamic boardSize/1.
+
 /* Pass turn to next player */
 next_player(Board-1, Board-2).
 next_player(Board-2, Board-1). 
@@ -93,7 +96,8 @@ isValidMove(X, 0, Steps, hor, [Row | _], Symbol) :-
 isValidMove(X, 0, Steps, hor, [Row | _], Symbol) :-
     NewSteps is abs(Steps),
     reverse(Row, RevRow),
-    NewX is 7-X,
+    boardSize(Size), LastIdx is Size-1,
+    NewX is LastIdx-X,
     clearPrefix(NewX, NewSteps, hor, RevRow, Symbol).
 
 isValidMove(X, Y, Steps, hor, [_ | RemainingBoard], Symbol) :-
@@ -168,27 +172,30 @@ validateTrajectory(_, _, _, _) :-     /* enemy symbol*/
 
 /* Function to move a Symbol Steps positions horizontally */
 moveXAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
+    boardSize(Size), LastIdx is Size-1,
     NewX is X + Steps,
     NewX >= 0,
-    NewX =< 7,
+    NewX =< LastIdx,
     placeSymbol(NewX, Y, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty). /* place empty symbol in the position the element was */
 
 /* Function to move a Symbol Steps positions vertically */
-moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :- 
+moveYAxis(X, Y, Steps, Board, ResultingBoard, Symbol) :-
+    boardSize(Size), LastIdx is Size-1,
     NewY is Y + Steps,
     NewY >= 0,
-    NewY =< 7,
+    NewY =< LastIdx,
     placeSymbol(X, NewY, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
 
 
 /* Function to move a Symbol Steps positions in diagonal */
 moveXYAxis(X, Y, StepsX, StepsY, Board, ResultingBoard, Symbol) :- 
+    boardSize(Size), LastIdx is Size-1,
     NewX is X+StepsX,
     NewY is Y+StepsY,
-    NewX >= 0, NewX =< 7, 
-    NewY >= 0, NewY =< 7,
+    NewX >= 0, NewX =< LastIdx, 
+    NewY >= 0, NewY =< LastIdx,
     placeSymbol(NewX, NewY, Board, AuxBoard, [], Symbol),
     placeSymbol(X, Y, AuxBoard, ResultingBoard, [], empty).
 

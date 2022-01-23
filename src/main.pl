@@ -15,6 +15,7 @@ Player -> 1 | 2 --- This player numbers are independent from their army
 */
 initial_state(P1Army, Board-Player):-
     initialBoard(Board),
+    assert(boardSize(8)),   % Shi is only played in an 8x8 board
     manageArmies(P1Army, Player).
 
 play_game(GameType, P1Army):-

@@ -24,8 +24,9 @@ findMoves(GameState, [Row | RemainingBoard], Symbol, Y, Moves, Acc) :-
 findMovesRow(_, [], _, _, _, Acc, Acc).
 
 findMovesRow(GameState, [Symbol | RemainingRow], Symbol, X, Y, RowMoves, Acc) :-
-    !, NumRight is 7-X, NumLeft is -X,
-    NumTop is -Y, NumBottom is 7-Y,
+    boardSize(Size), LastIdx is Size-1,
+    !, NumRight is LastIdx-X, NumLeft is -X,
+    NumTop is -Y, NumBottom is LastIdx-Y,
 
     findMovesRange(GameState, X, Y, NumLeft, hor, LeftMoves, Acc),
     findMovesRange(GameState, X, Y, NumRight, hor, RightMoves, LeftMoves),

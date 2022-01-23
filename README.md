@@ -159,3 +159,13 @@ In conclusion, the main goal of the project was achieved and by doing it we impr
 
 - https://boardgamegeek.com/boardgame/319861/shi
 
+## Annex
+
+### Initial State Board
+![Initial Board](./src/img/board1.png)
+
+### Intermediary State Board
+![Initial Board](./src/img/board2.png)
+
+### Final State Board
+![Initial Board](./src/img/board3.png)
