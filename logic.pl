@@ -158,7 +158,7 @@ validateTrajectory(Steps, [Symbol | RemainingRow], Symbol, AllyCount) :-
 validateTrajectory(Steps, [empty | RemainingRow], Symbol, AllyCount) :-
     AllyCount =< 2,
     NewSteps is Steps - 1,
-    !, validateTrajectory(NewSteps, RemainingRow, Symbol, AllyCount).   /* Investigate the need of this cuts*/
+    !, validateTrajectory(NewSteps, RemainingRow, Symbol, AllyCount).
 validateTrajectory(_, _, _, _) :-     /* enemy symbol*/
     !, fail.
 

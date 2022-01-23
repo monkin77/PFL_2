@@ -21,8 +21,11 @@ The main goal of this game is to reduce the enemy army to 4 pieces. To do this, 
 ## Game Logic
 ### Internal Representation of the Game State
 
-In order to represent the Game State, we decided to have a 2d Array, storing each element of the Board, and a Number representing the current Player, having GameState = Board-Player. Since our game has 2 types of pieces, Samurais and Ninjas, we decided to represent Samurais has `samurai`, Ninjas has `ninja` and empty spaces has `empty`.
+In order to represent the Game State, we decided to have a 2D Array, storing each element of the Board, and a Number representing the current Player, having GameState = Board-Player. Since our game has 2 types of pieces, Samurais and Ninjas, we decided to represent Samurais has `samurai`, Ninjas has `ninja` and empty spaces has `empty`.
+
 Initially, the Board starts with 8 Ninjas and 8 Samurais, where Ninjas are displayed in the first row of Player 2 side and Samurais in the first row of Player 1 side. The other rows start empty.
+
+To represent a `Move`, we use the following structure: `startRow/startCol/StepsX/StepsY/Direction`.
 
 
 ```prolog
@@ -62,42 +65,68 @@ endBoard([
 
 ### Visualization of the Game State
 
-To display to the user the Game State, we decided to show the `Ninjas` elements has `N`, `Samurai` elements has `S` and empty spaces has `-`. Adittionally, we had a line saying which is the current player (Player 1 or Player 2). To do so, we used the following functions: 
+Initially, we provide to the User a Main Menu asking him to choose the type of game he wants to play. Then, if the game chosen was Player against an AI, we provide a second menu asking him to choose the level of the AI. Finally, we ask him the Army which he wants to play, that can either be `Ninjas` or `Samurai`. Those Armies are represented as, respectively, `N` and `S`. This way, we can show to the User the current GameState, using the following predicates:
 
-- `symbol`, that converts the internal representation to visualization representation of the elements
+- `symbol`, that converts the internal representation to how we will show to the User the elements of the game
 
-- `print_text`, that by calling `print_n` writes a text in the screen
+- `print_text`, that writes a text with a padding in the screen
 
-- `printBoardHeader`; `printBoardFooter` - displays the board header and footer
+- `printBoardHeader` - displays the board header
+- `printBoardEmpty` - displays an Empty row of the board
 
 - `printBoardRow` - displays a row by iterating through it and writting each element in the screen
 
-- `printBoard` - displays the board by calling the `printBoardRow` function for each row of the board
+- `printBoard` - displays the board by calling the `printBoardRow` predicate for each row of the board
 
-- `display_game` that calls `printBoardHeader`, `printBoardFooter` and `printBoard` to display the current GameState.
+- `display_game` that calls `printBoardHeader`, `printBoardEmpty` and `printBoard` to display the current GameState.
+
+Additionally, we decided to show to the User the current GameState, by showing the current player and its respective game evaluation, by using the predicate `printCurrentPlayer(Board, Player)`. This predicate will get that game evaluation by using `value(Board, Player, Value)` predicate, which is explained in the section **Game State Evaluation**.
 
 ### Turn Execution
 
-- Since our Board is a 2d array, we decided that the plays done by the users would be represented by two numbers representing the row and column of the piece he wants to move. 
+- Since our Board is a 2D array, we decided that the plays done by the Users would be represented by two numbers representing the row and column of the piece he wants to move. 
 
-- In order to get those values, we use the function `choose_move(Board-Player, human, Move)`, that gets the move and parse it. In our game, the pieces can move like a chess queen, so we use the function `parseMove(StartRow/StartCol, EndRow/EndCol, Direction, StepsX, StepsY)` to get the direction of the move (vertical, horizontal and diagonal) and check if the movement is correct on the game rules. 
+- If the game is Player against Computer, we dynamically set the player Army (Ninjas or Samurais) and Starting Player to be the `Samurais`, by using the predicate `manageArmies(Army, StartingPlayer)` in the predicate `initial_state(P1Army, Board-Player)`, which sets the initial state of the game.
 
-- After that, we check if that move is valid in our GameState, by using `isValidMove(Board-Player, CurrMove)` function, that evaluates the board by iterating through the board and checking if it is the move is `Jump Attack` or if doesn't have any ally or enemy piece between the current position and the final position to which we want to move. To do so, we first create a row having all the elements of direction we want to move. Having the row, we then filter it using the `clearPrefix(X, Steps, Direction, Row, Symbol)` function, which will get us the row with the elements we will go throw when we move the piece. Finally, we check if the movement is valid by counting ally pieces we have between the initial position and the final position, using `validateTrajectory(Steps, [Symbol | RemainingRow], Symbol, AllyCount)`.
+- In order to get the next move, we use the predicate `choose_move(Board-Player, Player, Move)`, which can have 3 outcomes: 
+    - if Player is human, then we read and validate his move
+    - if Player is AI, we choose a random move or the best move, depending on the chosen AI Level
 
-- After having the desired move and checked if its valid, we use the function `move(GameState, Move, UpdatedGameState)` to apply it, which calls the respective function based on the direction of movement. Consequently, that function will replace the old position by an empty space and the new position with the piece he moved. 
+- In our game, the pieces can move like a *Chess Queen*, so we use the predicate `parseMove(StartRow/StartCol, EndRow/EndCol, Direction, StepsX, StepsY)` in order to get the Direction (vertical, horizontal and diagonal), StepsX, StepsY and check if the move is correct according to the game rules
+
+- After that, we check if that move is valid in our GameState, by using `isValidMove(Board-Player, CurrMove)` predicate, that evaluates the board by iterating through it and checking if the move is a `Jump Attack` or if it doesn't have any ally or enemy piece between the current position and the final position. To do so, we first create a list with the trajectory of the move. Having this list, we then filter it using the `clearPrefix(X, Steps, Direction, Row, Symbol)` predicate, which will set the starting position has the head of the list. Finally, we check if the movement is valid taking into account the number of ally pieces between the initial position and the final position, using `validateTrajectory(Steps, [Symbol | RemainingRow], Symbol, AllyCount)`
+
+- After having the desired move validated, we use the predicate `move(GameState, Move, UpdatedGameState)` to apply it, which calls the respective predicate based on the direction of *Move*. Consequently, that predicate will replace the old position by an empty space and the new position with the piece he moved, by using the predicate `placeSymbol(X, Y, [Row | RemainingBoard], ResultingBoard, Acc, Symbol)`
 
 ### End Game
 
-The end of the game is reached when a player has only 4 pieces, declaring that the other player won. In order to check that, we used the function `isEndGame(Board)` which will iterate through the Board and count the pieces of each player.
+The end of the game is reached when a player is reduced to 4 pieces, declaring that the other player won. In order to check that, we use the predicate `isEndGame(Board)` which will iterate through the Board and count the pieces of each player, by using the predicate `countBoardPieces(Board, NinjaCount, SamuraiCount)`.
 
 ### Valid Plays
 
 ### Game's State Evaluation
+
+To evaluate the current Game State, we use the predicate `value(Board, Player, Value)`. This predicate, by using `countBoardPieces(Board, NinjaCount, SamuraiCount)`, will get the number of pieces of each player and then calculate the difference between them from the perspective of the current player. This way, a higher score is better for the current player.
 
 ### Computers's plays
 
 ---
 ## Conclusion
 
+The main goal of this project was to apply the subjects taught in *Programação Funcional e em Lógica*, more specifically the Logical Programming methodology using Prolog. 
+
+Since we are used to different paradigms, this project challenged us to re-think on the problems we had and how to solve them. After a few weeks, this issue was already solved.
+
+Although we have tried to provide a friendly user interface, we felt that there were some limitations, such as the lack of colors.
+
+A next step to improve the game would be to include a natural language parsing to get user inputs. For example, specifying a move from (0, 2) to (0, 4) could be done by writing `move right 2`. 
+
+In conclusion, the main goal of the project was achieved and by doing it we improved our knowledge in *Logical Programming* and *Prolog*.
+
 ---
 ## Bibliography
+
+- https://sicstus.sics.se/sicstus/docs/4.2.3/html/sicstus/The-Prolog-Library.html
+
+- https://boardgamegeek.com/boardgame/319861/shi
+
