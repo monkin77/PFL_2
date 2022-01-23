@@ -300,4 +300,4 @@ manageArmies(samurai, StartingPlayer) :-
 manageArmies(ninja, StartingPlayer) :-
     assertz( ( piece(1, Symbol) :- Symbol = ninja ) ),
     assertz( ( piece(2, Symbol) :- Symbol = samurai ) ),
-    StartingPlayer = 2.
+    StartingPlayer = 1.
