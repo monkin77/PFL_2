@@ -59,9 +59,11 @@ printBoard([H|T], Index):-
 
 /* --------------------------------------------------------------- */
 
-printCurrentPlayer(Player):-
+printCurrentPlayer(Board, Player):-
     write('Current Player: '), 
-    write(Player), nl.
+    write(Player),
+    write('.  Score: '), value(Board, Player, Value),
+    write(Value), nl.
 
 /* --------------------------------------------------------------- */
 /* Clear Board after player1 move and before his move is displayed */

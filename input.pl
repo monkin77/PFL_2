@@ -77,7 +77,7 @@ checkPlayerMove(_, _) :- showError('Invalid move! Please try again.\n\n').
 
 /* --------------------------------------------------------------- */
 choose_move(Board-Player, human, Move) :-
-    printCurrentPlayer(Player), !, 
+    printCurrentPlayer(Board, Player), !, 
     repeat, 
     write('Choose the piece you want to move\n'),
     getCoords(StartRow, StartCol),
@@ -95,7 +95,7 @@ choose_move(Board-1, computer-_, Move) :-
 
 % Bot turn against a player or Bot V.S Bot (computer-2)
 choose_move(Board-Player, _-Level, Move) :-
-    printCurrentPlayer(Player), !, 
+    printCurrentPlayer(Board, Player), !, 
     sleep(1),
     valid_moves(Board-Player, Moves),
     choose_move(Level, Board-Player, Moves, Move).
