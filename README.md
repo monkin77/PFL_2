@@ -11,9 +11,14 @@ This project consists of implementing a board game for 2 players named *Shi* in 
 ---
 ## Setup and Execution
 
+1. Download source files
+2. Load `main.pl` file in SICStus GUI
+3. Type `play.` in the GUI
+
 ---
 ## Game Description
-*Shi* is a 8x8 board game that can be played by 2 players that take the role of **Ninja** and **Samurai**. Initially, there are 8 pieces per side, set up on the players' first row.  
+*Shi* is a 8x8 board game that can be played by 2 players that take the role of **Ninja** and **Samurai**. Initially, there are 8 pieces per side, set up on the players' first row. The game is always started by the **Samurai** Army.
+
 The main goal of this game is to reduce the enemy army to 4 pieces. To do this, all the pieces move like a *Chess Queen*, that is, an unlimited number of cells in all directions and attack the enemy with **jump attacks**. These attacks can only be made by jumping over a single friendly piece along the path of attack. Any number of unoccupied spaces, including none, may exist on that path. Furthermore, the piece being jumped, must always be an ally and never an enemy. For this reason, attacks can only target the first enemy in the path of attack.
 
 
@@ -23,7 +28,7 @@ The main goal of this game is to reduce the enemy army to 4 pieces. To do this, 
 
 In order to represent the Game State, we decided to have a 2D Array, storing each element of the Board, and a Number representing the current Player, having GameState = Board-Player. Since our game has 2 types of pieces, Samurais and Ninjas, we decided to represent Samurais has `samurai`, Ninjas has `ninja` and empty spaces has `empty`.
 
-Initially, the Board starts with 8 Ninjas and 8 Samurais, where Ninjas are displayed in the first row of Player 2 side and Samurais in the first row of Player 1 side. The other rows start empty.
+Initially, the Board starts with 8 Ninjas and 8 Samurais, where Ninjas are displayed in the first row and Samurais in the last row. The other rows start empty. The user has the possibility to choose what army he wishes to command. This is then setup in the predicate `initial_state(P1Army, Board-Player)` that will use the `manageArmies(Army, StartingPlayer)` method to dinamically assert rules into the database. More specifically, assign each player number to its army. 
 
 To represent a `Move`, we use the following structure: `startRow/startCol/StepsX/StepsY/Direction`.
 
@@ -63,9 +68,11 @@ endBoard([
 ]).
 ```
 
+---
+
 ### Visualization of the Game State
 
-Initially, we provide to the User a Main Menu asking him to choose the type of game he wants to play. Then, if the game chosen was Player against an AI, we provide a second menu asking him to choose the level of the AI. Finally, we ask him the Army which he wants to play, that can either be `Ninjas` or `Samurai`. Those Armies are represented as, respectively, `N` and `S`. This way, we can show to the User the current GameState, using the following predicates:
+Initially, we provide to the User a Main Menu asking him to choose the type of game he wants to play. Then, if the game chosen was Player against an AI, we provide a second menu asking him to choose the Army which he wants to command, that can either be `Ninjas` or `Samurai`. Those Armies are represented as, respectively, `N` and `S` in the board. Finally, we ask him the level of the AI, which can be `easy` or `hard`. This way, we can show to the User the current GameState, using the following predicates:
 
 - `symbol`, that converts the internal representation to how we will show to the User the elements of the game
 
@@ -82,11 +89,11 @@ Initially, we provide to the User a Main Menu asking him to choose the type of g
 
 Additionally, we decided to show to the User the current GameState, by showing the current player and its respective game evaluation, by using the predicate `printCurrentPlayer(Board, Player)`. This predicate will get that game evaluation by using `value(Board, Player, Value)` predicate, which is explained in the section **Game State Evaluation**.
 
+---
+
 ### Turn Execution
 
 - Since our Board is a 2D array, we decided that the plays done by the Users would be represented by two numbers representing the row and column of the piece he wants to move. 
-
-- If the game is Player against Computer, we dynamically set the player Army (Ninjas or Samurais) and Starting Player to be the `Samurais`, by using the predicate `manageArmies(Army, StartingPlayer)` in the predicate `initial_state(P1Army, Board-Player)`, which sets the initial state of the game.
 
 - In order to get the next move, we use the predicate `choose_move(Board-Player, Player, Move)`, which can have 3 outcomes: 
     - if Player is human, then we read and validate his move
@@ -98,17 +105,39 @@ Additionally, we decided to show to the User the current GameState, by showing t
 
 - After having the desired move validated, we use the predicate `move(GameState, Move, UpdatedGameState)` to apply it, which calls the respective predicate based on the direction of *Move*. Consequently, that predicate will replace the old position by an empty space and the new position with the piece he moved, by using the predicate `placeSymbol(X, Y, [Row | RemainingBoard], ResultingBoard, Acc, Symbol)`
 
+---
+
 ### End Game
 
 The end of the game is reached when a player is reduced to 4 pieces, declaring that the other player won. In order to check that, we use the predicate `isEndGame(Board)` which will iterate through the Board and count the pieces of each player, by using the predicate `countBoardPieces(Board, NinjaCount, SamuraiCount)`.
 
+---
+
 ### Valid Plays
+
+To obtain the list of valid moves of a player, we use the predicate `valid_moves(Board-Player, Moves)`. For this, we iterate each board cell and, whenever we find a player's piece we execute the following steps:
+
+1. Calculate the number of cells to the right, left, top and bottom of that piece.
+2. For each move direction `(left, right, top, bottom, top left, bottom left, top right, bottom right)` we call the `findMovesRange(GameState, X, Y, StepsX, StepsY, direction, RowMoves, Acc)` method that will verify every possible move in that direction, starting in the position `(X+StepsX, Y+StepsY)` and decrementing Steps by 1 at each iteration until they reach 0.
+3. In the case of diagonal movement, there's an additional step required before (2), since `StepsX` must be equal to `StepsY`. For every diagonal direction, we need to calculate what is the minimum number of cells available to move and restrain both `StepsX` and `StepsY` to that absolute value, without changing its direction.
+4. Every solution found will be stored in the accumulator and appended to the list containing all moves.
+
+After this iterative process, `Moves` will contain all the possible moves of a given player according to the current game state.
+
+---
 
 ### Game's State Evaluation
 
 To evaluate the current Game State, we use the predicate `value(Board, Player, Value)`. This predicate, by using `countBoardPieces(Board, NinjaCount, SamuraiCount)`, will get the number of pieces of each player and then calculate the difference between them from the perspective of the current player. This way, a higher score is better for the current player.
 
-### Computers's plays
+---
+
+### Computers's Move
+
+To execute a computer's move, we use the predicate `choose_move(Board-Player, _GameType-Level, Move)`. First, this method displays the current player and generates the list of valid moves. After that, it chooses a move from the list. Hence, there are 2 ways to choose the move depending on the AI level:
+
+- Easy level --> Select a random Move from the list of Moves.
+- Hard level --> According to the *Shi* rules, the best possible outcome of a player's turn is capturing an enemies' piece. Since we have a predicate to evaluate the state of the game from the view of a specific player (`value`), we just need to calculate the value before the move and choose a move that increments that player score by 1, since it's the maximum increment a single round might give. 
 
 ---
 ## Conclusion
