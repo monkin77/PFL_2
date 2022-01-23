@@ -9,41 +9,14 @@ getOption :-
     read_until_between(0, 3, Option),
     handleOption(Option).
 
-getLevel(Players) :- 
-    write('Insert level -> '),
-    read_until_between(0, 2, Option),
-    handleLevel(Players, Option).
-
-/* --------------------------------------------------------------- */
-handleLevel(_, 0):-
-    mainMenu.
-    
-handleLevel(player-ai, 1):-
-    play_game(computer-easy).
-
-handleLevel(player-ai, 2):-
-    play_game(computer-hard).
-
-handleLevel(ai-ai, 1):-
-    play_game(computer2-easy).
-
-handleLevel(ai-ai, 2):-
-    play_game(computer2-hard).
-
-handleOption(_, _) :-
-    write('That is not a valid option!\n\n'),
-    getOption.
-
-/* --------------------------------------------------------------- */
-
 handleOption(1) :-
-    !, play_game(human).
+    !, play_game(human, samurai).
 
 handleOption(2) :-
-    !, showAILevelMenu, getLevel(player-ai).
+    !, showArmyMenu, getArmy(player-ai). 
 
 handleOption(3) :-
-    !, showAILevelMenu, getLevel(ai-ai).
+    !, showAILevelMenu, getLevel(ai-ai, samurai).
 
 handleOption(0) :-
     write('Leaving...\n').
@@ -51,6 +24,43 @@ handleOption(0) :-
 handleOption(_) :-
     write('That is not a valid option!\n\n'),
     getOption.
+
+/* --------------------------------------------------------------- */
+
+getLevel(Players, Army) :- 
+    write('Insert level -> '),
+    read_until_between(0, 2, Option),
+    handleLevel(Players, Army, Option).
+
+handleLevel(_, _, 0):-
+    !, mainMenu.
+    
+handleLevel(player-ai, Army, 1):-
+    play_game(computer-easy, Army).
+
+handleLevel(player-ai, Army, 2):-
+    play_game(computer-hard, Army).
+
+handleLevel(ai-ai, samurai, 1):-
+    play_game(computer2-easy, samurai).
+
+handleLevel(ai-ai, samurai, 2):-
+    play_game(computer2-hard, samurai).
+
+/* --------------------------------------------------------------- */
+getArmy(Players) :- 
+    write('Choose your army -> '),
+    read_until_between(0, 2, Option),
+    handleArmy(Players, Option).
+
+handleArmy(_, 0):-
+    !, mainMenu.
+    
+handleArmy(Players, 1):-
+    showAILevelMenu, getLevel(Players, samurai).
+
+handleArmy(Players, 2):-
+    showAILevelMenu, getLevel(Players, ninja).
 
 /* --------------------------------------------------------------- */
 
@@ -79,22 +89,39 @@ showMainMenu :-
     write(' -------------------------------------- \n'),
     nl.
 
-/* 40x20 Board */ 
 showAILevelMenu :-
     nl,
     write(' -------------------------------------- \n'),
     write('|                                      |\n'),
-    write('|                   Shi                |\n'),
+    write('|                  Shi                 |\n'),
     write('|                                      |\n'),
     write('|           -------------------        |\n'),
     write('|                                      |\n'),
     write('|                                      |\n'),
-    write('|                1. Easy               |\n'),
+    write('|               1. Easy                |\n'),
     write('|                                      |\n'),
-    write('|               2. Medium              |\n'),
+    write('|               2. Hard                |\n'),
     write('|                                      |\n'),
     write('|              0. Go Back              |\n'),
     write('|                                      |\n'),
+    write(' -------------------------------------- \n'),
+    nl.
+
+showArmyMenu:-
+    nl,
+    write(' -------------------------------------- \n'),
+    write('|                                      |\n'),
+    write('|                  Shi                 |\n'),
+    write('|                                      |\n'),
+    write('|            Choose your army          |\n'),
+    write('|                                      |\n'),
+    write('|           -------------------        |\n'),
+    write('|                                      |\n'),
+    write('|              1. Samurais             |\n'),
+    write('|                                      |\n'),
+    write('|              2. Ninjas               |\n'),
+    write('|                                      |\n'),
+    write('|              0. Go Back              |\n'),
     write('|                                      |\n'),
     write(' -------------------------------------- \n'),
     nl.

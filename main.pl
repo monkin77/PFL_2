@@ -10,12 +10,12 @@
 
 /* Move -> startRow/startCol/StepsX/StepsY/Direction */
 /* GameState = Board-Player. Player -> 1 | 2 */
-initial_state(Board-Player):-
+initial_state(P1Army, Board-Player):-
     initialBoard(Board),
-    Player = 1.
+    manageArmies(P1Army, Player).
 
-play_game(GameType):-
-    initial_state(GameState),
+play_game(GameType, P1Army):-
+    initial_state(P1Army, GameState),
     display_game(GameState),
     game_cycle(GameState, GameType).
     

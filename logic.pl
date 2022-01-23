@@ -19,6 +19,9 @@ testBoard([
 ]).
 
 /* --------------------------- Utils ----------------------------- */
+/* Players */
+:-dynamic piece/2.
+
 /* Pass turn to next player */
 next_player(Board-1, Board-2).
 next_player(Board-2, Board-1). 
@@ -281,3 +284,15 @@ move(Board-Player, StartRow/StartCol/StepsX/StepsY/diag, NewGameState):-
     piece(Player, P),
     moveXYAxis(StartCol, StartRow, StepsX, StepsY, Board, NewBoard, P),
     NewGameState = NewBoard-Player.
+
+/* ----------------------- Armies --------------------------- */
+/* Add methods that identify each player number to its piece and define the starting player */
+manageArmies(samurai, StartingPlayer) :-
+    assertz( ( piece(1, Symbol) :- Symbol = samurai ) ),
+    assertz( ( piece(2, Symbol) :- Symbol = ninja ) ),
+    StartingPlayer = 1.
+
+manageArmies(ninja, StartingPlayer) :-
+    assertz( ( piece(1, Symbol) :- Symbol = ninja ) ),
+    assertz( ( piece(2, Symbol) :- Symbol = samurai ) ),
+    StartingPlayer = 2.

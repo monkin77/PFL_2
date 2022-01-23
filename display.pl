@@ -8,10 +8,6 @@ symbol(empty,S) :- S='-'.
 symbol(ninja,S) :- S='N'.
 symbol(samurai,S) :- S='S'.
 
-/* Players */
-piece(1, Symbol) :- Symbol = samurai.  
-piece(2, Symbol) :- Symbol = ninja.
-
 /* --------------------------------------------------------------- */
 
 print_n(_, 0).
